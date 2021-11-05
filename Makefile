@@ -3,16 +3,30 @@ COMPILER_DONT_LINK_OPTION = -c
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
 SOURCE_DIRECTORY = src
-SOURCES = $(wildcard $(SOURCE_DIRECTORY)/*.cpp)
+SOURCE_SUFFIX = .cpp
+SOURCES = $(wildcard $(SOURCE_DIRECTORY)/*$(SOURCE_SUFFIX))
 OBJECT_DIRECTORY = obj
-OBJECTS = $(patsubst $(SOURCE_DIRECTORY)/%, $(OBJECT_DIRECTORY)/%, $(patsubst %.cpp, %.o, $(SOURCES)))
+OBJECT_SUFFIX = .o
+OBJECTS = $(patsubst $(SOURCE_DIRECTORY)/%, $(OBJECT_DIRECTORY)/%, $(patsubst %$(SOURCE_SUFFIX), %$(OBJECT_SUFFIX), $(SOURCES)))
 TARGET = GenImg
 
 $(TARGET): $(OBJECTS)
 	$(COMPILER) $^ $(COMPILER_WARNING_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
-$(OBJECTS): $(patsubst $(OBJECT_DIRECTORY)/%, $(SOURCE_DIRECTORY)/%, $(patsubst %.o, %.cpp, $@))
+$(OBJECTS): $(patsubst $(OBJECT_DIRECTORY)/%, $(SOURCE_DIRECTORY)/%, $(patsubst %$(OBJECT_SUFFIX), %$(SOURCE_SUFFIX), $@))
 
-$(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.cpp
+$(OBJECT_DIRECTORY)/%$(OBJECT_SUFFIX): $(SOURCE_DIRECTORY)/%$(SOURCE_SUFFIX)
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_WARNING_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+
+clean:
+	for i in $(TARGET) $(OBJECTS); do	\
+		if [ -e $$i ]; then		\
+			rm $$i;			\
+		fi;				\
+	done
+
+rebuild: clean
+	make
+
+.PHONY: clean rebuild
 
