@@ -1,0 +1,15 @@
+COMPILER = g++
+COMPILER_DONT_LINK_OPTION = -c
+COMPILER_OUTPUT_OPTION = -o
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
+TARGET = GenImg
+
+$(TARGET): $(OBJECTS)
+	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@
+
+$(OBJECTS): $(@:.o=.cpp)
+
+%.o: %.cpp
+	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+
