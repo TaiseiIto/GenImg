@@ -2,15 +2,17 @@ COMPILER = g++
 COMPILER_DONT_LINK_OPTION = -c
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
-SOURCES = $(wildcard *.cpp)
-OBJECTS = $(patsubst %.cpp, %.o, $(SOURCES))
+SOURCE_DIRECTORY = src
+SOURCES = $(wildcard $(SOURCE_DIRECTORY)/*.cpp)
+OBJECT_DIRECTORY = obj
+OBJECTS = $(patsubst $(SOURCE_DIRECTORY)/%, $(OBJECT_DIRECTORY)/%, $(patsubst %.cpp, %.o, $(SOURCES)))
 TARGET = GenImg
 
 $(TARGET): $(OBJECTS)
 	$(COMPILER) $^ $(COMPILER_WARNING_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
-$(OBJECTS): $(@:.o=.cpp)
+$(OBJECTS): $(patsubst $(OBJECT_DIRECTORY)/%, $(SOURCE_DIRECTORY)/%, $(patsubst %.o, %.cpp, $@))
 
-%.o: %.cpp
+$(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.cpp
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_WARNING_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
